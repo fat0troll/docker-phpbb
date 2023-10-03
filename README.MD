@@ -1,5 +1,7 @@
 # phpBB3 docker image
 
+This is updated fork of [selim13's docker-phpbb image](https://github.com/selim13/docker-phpbb).
+
 Lightweight, Alpine based [phpBB](https://www.phpbb.com/) docker image.
 
 # Supported tags and respective `Dockerfile` links
