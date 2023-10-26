@@ -1,6 +1,6 @@
 FROM alpine:3.17
 
-LABEL maintainer="selim013@gmail.com"
+LABEL maintainer="vladimir@hodakov.me"
 
 RUN apk add --no-cache curl \
     imagemagick \
@@ -27,8 +27,8 @@ RUN apk add --no-cache curl \
     su-exec
 
 ### phpBB
-ENV PHPBB_VERSION 3.3.10
-ENV PHPBB_SHA256 4383cd82a9db93914f252cc3535a789ff3d41447f5214dbe5416483b97ac5ef0
+ENV PHPBB_VERSION 3.3.11
+ENV PHPBB_SHA256 c9eedbc3f1564c7a1b7d05189d76ed1ff4304379b2091264912a9ad97cbe09b0
 
 WORKDIR /tmp
 
