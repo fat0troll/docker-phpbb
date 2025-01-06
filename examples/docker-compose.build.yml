@@ -1,0 +1,18 @@
+volumes:
+  phpbb-sqlite: {}
+  phpbb-files: {}
+  phpbb-store: {}
+  phpbb-avatars: {}
+
+services:
+  phpbb:
+    build: .
+    ports:
+      - '127.0.0.1:8000:80'
+    volumes:
+      - 'phpbb-sqlite:/phpbb/sqlite'
+      - 'phpbb-files:/phpbb/www/files'
+      - 'phpbb-store:/phpbb/www/store'
+      - 'phpbb-avatars:/phpbb/www/images/avatars/upload'
+    environment:
+      PHPBB_INSTALL: 'true'

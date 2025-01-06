@@ -1,0 +1,23 @@
+:8080 {
+    root * /var/www/html/public
+
+    php_fastcgi unix//run/php-fpm.sock {
+        trusted_proxies private_ranges
+    }
+
+    file_server
+
+    log stdout
+}
+
+:8181 {
+    root * /phpbb/www
+
+    php_fastcgi unix//run/php-fpm.sock {
+        trusted_proxies private_ranges
+    }
+
+    file_server
+
+    log stdout
+}
