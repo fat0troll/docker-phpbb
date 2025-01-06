@@ -1,5 +1,7 @@
 # phpBB3 docker image
 
+[![status-badge](https://ci.hodakov.me/api/badges/1/status.svg)](https://ci.hodakov.me/repos/1)
+
 This is updated fork of [selim13's docker-phpbb image](https://github.com/selim13/docker-phpbb).
 
 Now it even bundles caddy instead of apache2. Thanks
