@@ -1,64 +1,79 @@
-FROM alpine:3.17
+# Install Caddy
+FROM docker.io/caddy:builder-alpine AS caddy-builder
+RUN xcaddy build
+
+
+# Install PHP
+FROM docker.io/alpine
 
 LABEL maintainer="vladimir@hodakov.me"
 
+# Setup document root
+WORKDIR /var/www/html
+
+# Get caddy
+COPY --from=caddy-builder /usr/bin/caddy /usr/bin/caddy
+
+# Install packages and remove default server definition
 RUN apk add --no-cache curl \
     imagemagick \
-    apache2 \
-    php81 \
-    php81-apache2 \
-    php81-ctype \
-    php81-curl \
-    php81-dom \
-    php81-ftp \
-    php81-gd \
-    php81-iconv \
-    php81-json \
-    php81-mbstring \
-    php81-mysqli \
-    php81-opcache \
-    php81-openssl \
-    php81-pgsql \
-    php81-sqlite3 \
-    php81-tokenizer \
-    php81-xml \
-    php81-zlib \
-    php81-zip \
-    su-exec
+    php84 \
+    php84-fpm \
+    php84-apache2 \
+    php84-ctype \
+    php84-curl \
+    php84-dom \
+    php84-ftp \
+    php84-gd \
+    php84-iconv \
+    php84-json \
+    php84-mbstring \
+    php84-mysqli \
+    php84-opcache \
+    php84-openssl \
+    php84-pgsql \
+    php84-sqlite3 \
+    php84-tokenizer \
+    php84-xml \
+    php84-zlib \
+    php84-zip \
+    supervisor
 
-### phpBB
-ENV PHPBB_VERSION 3.3.14
-ENV PHPBB_SHA256 68cd6cf3faefa175ea3892ba02c6b112e8967ed33703521c79820e35bd15ec9a
+# Configure Caddy
+COPY config/Caddyfile /etc/caddy/Caddyfile
+
+# Configure PHP-FPM
+COPY config/fpm-pool.conf /etc/php84/php-fpm.d/www.conf
+COPY config/php.ini /etc/php84/conf.d/custom.ini
+
+# Configure supervisord
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN mkdir /.config /phpbb
+
+# Add tests app installation
+COPY src/ /var/www/html/
+
+# Add phpBB installation
+ENV PHPBB_VERSION=3.3.14
+ENV PHPBB_SHA256=68cd6cf3faefa175ea3892ba02c6b112e8967ed33703521c79820e35bd15ec9a
 
 WORKDIR /tmp
 
 RUN curl -SL https://download.phpbb.com/pub/release/3.3/${PHPBB_VERSION}/phpBB-${PHPBB_VERSION}.tar.bz2 -o phpbb.tar.bz2 \
     && echo "${PHPBB_SHA256}  phpbb.tar.bz2" | sha256sum -c - \
     && tar -xjf phpbb.tar.bz2 \
-    && mkdir /phpbb \
     && mkdir /phpbb/sqlite \
     && mv phpBB3 /phpbb/www \
     && rm -f phpbb.tar.bz2
 
 COPY phpbb/config.php /phpbb/www
 
-### Server
-RUN mkdir -p /run/apache2 /phpbb/opcache \
-    && chown apache:apache /run/apache2 /phpbb/opcache
+# Expose the ports Caddy is reachable on
+EXPOSE 8080
+EXPOSE 8181
 
-COPY apache2/httpd.conf /etc/apache2/
-COPY apache2/conf.d/* /etc/apache2/conf.d/
-COPY php/php.ini php/php-cli.ini /etc/php81/
-COPY php/conf.d/* /etc/php81/conf.d
-COPY start.sh /usr/local/bin/
-
-RUN chown -R apache:apache /phpbb
 WORKDIR /phpbb/www
-
-#VOLUME /phpbb/sqlite
-#VOLUME /phpbb/www/files
-#VOLUME /phpbb/www/store
-#VOLUME /phpbb/www/images/avatars/upload
 
 ENV PHPBB_INSTALL= \
     PHPBB_DB_DRIVER=sqlite3 \
@@ -73,5 +88,8 @@ ENV PHPBB_INSTALL= \
     PHPBB_DEBUG= \
     PHPBB_DEBUG_CONTAINER=
 
-EXPOSE 80
+COPY start.sh /usr/local/bin/
 CMD ["start.sh"]
+
+# Configure a healthcheck to validate that everything is up and running
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping

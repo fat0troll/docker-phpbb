@@ -17,11 +17,8 @@ db_wait() {
 db_migrate() {
     if [[ "${PHPBB_DB_AUTOMIGRATE}" = "true" && "${PHPBB_INSTALL}" != "true" ]]; then
         echo "$(date) - applying migrations"
-        su-exec apache php bin/phpbbcli.php db:migrate
+        php84 bin/phpbbcli.php db:migrate
     fi
 }
 
-# Apache gets grumpy about PID files pre-existing
-rm -f /run/apache2/httpd.pid
-
-db_wait && db_migrate && exec httpd -DFOREGROUND "$@"
+db_wait && db_migrate && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
