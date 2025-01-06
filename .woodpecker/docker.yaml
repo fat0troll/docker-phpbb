@@ -1,0 +1,35 @@
+
+when:
+  branch: main
+  event: [push, pull_request]
+
+variables:
+  - &repo source.hodakov.me/${CI_REPO_OWNER}/docker-phpbb
+
+steps:
+  dryrun:
+    image: woodpeckerci/plugin-docker-buildx:5.1.0
+    privileged: true
+    settings:
+      dockerfile: Dockerfile
+      platforms: linux/arm64/v8,linux/amd64
+      dry_run: true
+      repo: *repo
+      tags: latest
+    when:
+      event: pull_request
+
+  publish:
+    image: woodpeckerci/plugin-docker-buildx:5.1.0
+    privileged: true
+    settings:
+      dockerfile: Dockerfile
+      platforms: linux/arm64/v8,linux/amd64
+      repo: *repo
+      registry: source.hodakov.me
+      tags: latest
+      username: ${CI_REPO_OWNER}
+      password:
+        from_secret: registry_token
+    when:
+      event: push

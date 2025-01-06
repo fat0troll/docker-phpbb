@@ -7,6 +7,8 @@ Now it even bundles caddy instead of apache2. Thanks
 
 Lightweight, Alpine based [phpBB](https://www.phpbb.com/) docker image.
 
+You can find an example of forum running using this image at [ks.fhs.sh](https://ks.fhs.sh).
+
 # Supported tags and respective `Dockerfile` links
 
 - [`3.3`, `3.3.11`, `latest`](https://github.com/fat0troll/docker-phpbb/blob/master/Dockerfile) bundled with PHP 8
