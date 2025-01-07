@@ -2,18 +2,16 @@
 
 [![status-badge](https://ci.hodakov.me/api/badges/1/status.svg)](https://ci.hodakov.me/repos/1)
 
-This is updated fork of [selim13's docker-phpbb image](https://github.com/selim13/docker-phpbb).
-
-Now it even bundles caddy instead of apache2. Thanks
-[ParaParty/docker-php-caddy](https://github.com/ParaParty/docker-php-caddy) for the inspiration.
-
 Lightweight, Alpine based [phpBB](https://www.phpbb.com/) docker image.
+
+This is a heavily modified fork of [selim13's docker-phpbb image](https://github.com/selim13/docker-phpbb). Now it even bundles caddy instead of apache2. Thanks
+[ParaParty/docker-php-caddy](https://github.com/ParaParty/docker-php-caddy) for the inspiration.
 
 You can find an example of forum running using this image at [ks.fhs.sh](https://ks.fhs.sh).
 
 # Supported tags and respective `Dockerfile` links
 
-- [`3.3`, `3.3.11`, `latest`](https://github.com/fat0troll/docker-phpbb/blob/master/Dockerfile) bundled with PHP 8
+- [`3.3.x`, `latest`](https://source.hodakov.me/hdkv/docker-phpbb/src/branch/main/Dockerfile) bundled with PHP 8
 
 # How to use this image
 
@@ -24,10 +22,10 @@ installer script, just run a temporary container with `PHPBB_INSTALL=true`
 environment variable:
 
 ```console
-$ docker run -p 8000:8181 --name phpbb-install -e PHPBB_INSTALL=true -d fat0troll/phpbb:3.3
+$ docker run -p 8181:8181 --name phpbb-install -e PHPBB_INSTALL=true -d source.hodakov.me/hdkv/phpbb
 ```
 
-Point your browser to the http://localhost:8000 to begin the
+Point your browser to the http://localhost:8181 to begin the
 installation process.
 
 This image is bundled with SQLite3, MySQL and PostgresSQL database engines
@@ -50,7 +48,7 @@ $ docker stop phpbb-install
 You can start a container as follows:
 
 ```console
-$ docker run --name phpbb -d fat0troll/phpbb:3.3
+$ docker run --name phpbb -d source.hodakov.me/hdkv/phpbb
 ```
 
 By default, it uses SQLite3 as a database backend, so you will need to supply
@@ -59,7 +57,7 @@ it with a database file. It's default path is `/phpbb/sqlite/sqlite.db`.
 You can import it from the temporary installation container above:
 
 ```console
-$ docker run --volumes-from phpbb-install --name phpbb -d fat0troll/phpbb:3.3
+$ docker run --volumes-from phpbb-install --name phpbb -d source.hodakov.me/hdkv/phpbb
 ```
 
 Or just copy it inside container if you have one from previous phpBB
@@ -79,7 +77,7 @@ $ docker run --name phpbb     \
     -e PHPBB_DB_PORT=3306     \
     -e PHPBB_DB_NAME=phpbb    \
     -e PHPBB_DB_USER=phpbb    \
-    -e PHPBB_DB_PASSWD=pass -d selim13/phpbb:3.3
+    -e PHPBB_DB_PASSWD=pass -d source.hodakov.me/hdkv/phpbb
 ```
 
 ## Environment variables
@@ -174,41 +172,8 @@ If set to `true`, enables phpBB debug mode.
 
 ## Volumes
 
-By default there are four volumes created for each container:
-
-- /phpbb/sqlite
-- /phpbb/www/files
-- /phpbb/www/store
-- /phpbb/www/images/avatars/upload
-
-# Additional configuration
-
-This image is based on a stock official Alpine image with apache2 and php5
-packages from the Alpine Linux repository, so you can drop their custom
-configuration files to `/etc/apache2/conf.d` and `/etc/php5/conf.d`.
-
-## Pass user's IP from proxy
-
-If you are planning to start a container behind proxy
-(like [nginx-proxy](https://github.com/jwilder/nginx-proxy)), it will probably
-be a good idea to get user's real IP instead of proxy one. For this, you can use
-Apache RemoteIP module. Create a configuration file:
-
-```apache
-LoadModule remoteip_module modules/mod_remoteip.so
-
-RemoteIPHeader X-Real-IP
-RemoteIPInternalProxy nginx-proxy
-```
-
-Here `X-Real-IP` is a header name, where proxy passed user's real IP and
-`nginx-proxy` is proxy host name.
-
-Then push it to `/etc/apache2/conf.d/` directory, for example, by extending this
-image:
-
-```dockerfile
-FROM selim13/phpbb:3.3
-
-COPY remoteip.conf /etc/apache2/conf.d
-```
+No default volumes are predefined. You can mount everything you want
+inside `/phpbb/<something>`. For example, given that [ks.fhs.sh](https://ks.fhs.sh)
+was migrating into Docker from bare metal instance back in 2023, I
+mounted the directories `files`, `store`, `ext`, `images` and
+`themes`, which proved working for more than a year at this point.
