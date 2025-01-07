@@ -1,7 +1,7 @@
 
 when:
   branch: main
-  event: [push, pull_request]
+  event: [push, pull_request, tag]
 
 variables:
   - &repo source.hodakov.me/${CI_REPO_OWNER}/docker-phpbb
@@ -15,7 +15,7 @@ steps:
       platforms: linux/arm64/v8,linux/amd64
       dry_run: true
       repo: *repo
-      tags: latest
+      auto_tag: true
     when:
       event: pull_request
 
@@ -27,9 +27,9 @@ steps:
       platforms: linux/arm64/v8,linux/amd64
       repo: *repo
       registry: source.hodakov.me
-      tags: latest
+      auto_tag: true
       username: ${CI_REPO_OWNER}
       password:
         from_secret: registry_token
     when:
-      event: push
+      event: [push, tag]
