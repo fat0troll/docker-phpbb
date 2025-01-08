@@ -71,7 +71,7 @@ COPY phpbb/config.php /phpbb/www
 
 # Expose the ports Caddy is reachable on
 EXPOSE 8080
-EXPOSE 8181
+EXPOSE 9080
 
 WORKDIR /phpbb/www
 
@@ -88,8 +88,14 @@ ENV PHPBB_INSTALL= \
     PHPBB_DEBUG= \
     PHPBB_DEBUG_CONTAINER=
 
+# Add sane default volumes for phpBB
+VOLUME /phpbb/sqlite
+VOLUME /phpbb/www/files
+VOLUME /phpbb/www/store
+VOLUME /phpbb/www/images/avatars/upload
+
 COPY start.sh /usr/local/bin/
 CMD ["start.sh"]
 
 # Configure a healthcheck to validate that everything is up and running
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:9080/fpm-ping

@@ -22,10 +22,10 @@ installer script, just run a temporary container with `PHPBB_INSTALL=true`
 environment variable:
 
 ```console
-$ docker run -p 8181:8181 --name phpbb-install -e PHPBB_INSTALL=true -d source.hodakov.me/hdkv/phpbb
+$ docker run -p 8080:8080 --name phpbb-install -e PHPBB_INSTALL=true -d source.hodakov.me/hdkv/phpbb
 ```
 
-Point your browser to the http://localhost:8181 to begin the
+Point your browser to the http://localhost:8080 to begin the
 installation process.
 
 This image is bundled with SQLite3, MySQL and PostgresSQL database engines

@@ -1,5 +1,12 @@
+{
+	servers {
+		trusted_proxies static private_ranges
+		trusted_proxies_strict
+	}
+}
+
 :8080 {
-    root * /var/www/html/public
+    root * /phpbb/www
 
     php_fastcgi unix//run/php-fpm.sock {
         trusted_proxies private_ranges
@@ -10,8 +17,8 @@
     log stdout
 }
 
-:8181 {
-    root * /phpbb/www
+:9080 {
+    root * /var/www/html/public
 
     php_fastcgi unix//run/php-fpm.sock {
         trusted_proxies private_ranges
