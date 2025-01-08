@@ -10,6 +10,7 @@
 
     php_fastcgi unix//run/php-fpm.sock {
         trusted_proxies private_ranges
+        env REMOTE_ADDR {client_ip}
     }
 
     file_server

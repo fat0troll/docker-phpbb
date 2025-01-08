@@ -9,6 +9,9 @@ This is a heavily modified fork of [selim13's docker-phpbb image](https://github
 
 You can find an example of forum running using this image at [ks.fhs.sh](https://ks.fhs.sh).
 
+Note: this image expects that you run it behind another reverse proxy and does _not_ handle HTTPS automatically. Use it
+behind another instance of caddy, for example.
+
 # Supported tags and respective `Dockerfile` links
 
 - [`3`,`3.3`, `3.3.14`, `latest`](https://source.hodakov.me/hdkv/docker-phpbb/src/branch/main/Dockerfile) bundled with PHP 8
